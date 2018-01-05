@@ -1,0 +1,179 @@
+swagger: "2.0"
+info:
+  description: "This is a simple movies server using Node.js and redis . "
+  version: "1.0.0"
+  title: "Movies Restful api"
+  termsOfService: "#"
+  contact:
+    email: "hi@samuel.com.ng"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "127.0.0.1:8090"
+basePath: "/"
+tags:
+- name: "Movies"
+  description: "Everything about your Movies"
+  externalDocs:
+    description: "Find out more"
+    url: "http://127.0.0.1:8090"
+schemes:
+- "http"
+paths:
+  /movie:
+    post:
+      tags:
+      - "Movies"
+      summary: "Add a new Movie to the database"
+      description: "Add a new Movie to the database and return the newly added movie with its id"
+      operationId: "save"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body" 
+        name: "body"
+        description: "Movie object"
+        required: true
+        schema:
+          $ref: "#/definitions/movies"
+      
+      responses:
+        400:
+          description: "A parameter is missing"
+        201:
+          description: "Movie was succesfully added"
+  
+  /movies:
+    get:
+      tags:
+      - "Movies"
+      summary: "Retrieve all movies from the database"
+      description: "Get all movies from the database"
+      operationId: "all"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        400:
+          description: "An error occured, check the error object returned"
+        200:
+          description: "Movies were succesfully returned"
+          
+  /movie/{id}:
+    get:
+      tags:
+      - "Movies"
+      summary: "Retrieve a movie from the database by its id"
+      description: "Retrieve a movie from the database by its id"
+      operationId: "find"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of movie to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        400:
+          description: "An error occured, check the error object returned"
+        200:
+          description: "Movie was succesfully returned"
+          
+    put:
+      tags:
+      - "Movies"
+      summary: "update a movie from the database by its id"
+      description: "update a movie from the database by its id and returns the updated object"
+      operationId: "update"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of movie to update"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body" 
+        name: "body"
+        description: "Movie object"
+        required: true
+        schema:
+          $ref: "#/definitions/movies"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        400:
+          description: "An error occured, check the error object returned"
+        200:
+          description: "Movies was succesfully updated"
+          
+    delete:
+      tags:
+      - "Movies"
+      summary: "Delete a movie from the database by its id"
+      description: "Delete a movie from the database by its id"
+      operationId: "delete"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of movie to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        400:
+          description: "An error occured, check the error object returned"
+        200:
+          description: "Movie was succesfully deleted"
+
+definitions:
+  movies:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "name of the movie"
+      dateReleased:
+        type: "string"
+        format: "date-time"
+        description: "Date of the movie release"
+      genre:
+        type: "string"
+        description: "genre of the movie"
+        
+      producer:
+        type: "string"
+        description: "Producer of the movie"
+      
+      director:
+        type: "string"
+        description: "Director of the movie"
+      
+      movieBudget:
+        type: "string"
+        description: "Budget of the movie"
+        
+      rating:
+        type: "string"
+        description: "Rating of the movie"
+    required:
+        - name
+        - dateReleased
+        - genre
+        - producer
+        - director
+        - movieBudget
+        - rating
+

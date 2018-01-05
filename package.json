@@ -1,0 +1,31 @@
+{
+  "name": "atlas_money_test",
+  "version": "1.0.0",
+  "description": "Atlas money test",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test mocha --timeout 10000 --exit"
+  },
+  "keywords": [
+    "atlas",
+    "money",
+    "rest",
+    "api",
+    "movies"
+  ],
+  "author": "ogundipe samuel",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "morgan": "^1.9.0",
+    "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "redis-mock": "^0.20.0",
+    "mocha": "^4.1.0",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0"
+  }
+}
