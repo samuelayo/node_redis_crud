@@ -45,6 +45,7 @@ it('should update the director name of a movie', function(done) {
         .put('/movie/'+data.id)
         .send(data)
         .end(function(err, res) {
+          //console.log(res);
           expect(res.body.director).to.equal("new director");
           done();
         });

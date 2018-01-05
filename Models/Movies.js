@@ -17,7 +17,7 @@ class Movies {
      * @param {options} : Object an object containing the name, release date, genre, producer, director, movie budget, and rating of a movie
      * @returns {Void}
      */
-    constructor(options = null) {
+    constructor(options = {}) {
             this.name = options.name || null;
             this.dateReleased = options.dateReleased || null;
             this.genre = options.genre || null;
@@ -41,28 +41,44 @@ class Movies {
                     //be sure there isnt any error before attempting to save the new object
                     if (this.checkError()) {
                         // reject the promise call as an error occured.
-                        reject(new MovieException('Some required fields were not provided'));
+                        return reject(new MovieException('Some required fields were not provided'));
                     }
                     //call the hmset method of our redis store. Passing in the keys and value we want to store
-                    redisClient.hmset("movies" + id, ["name", this.name,
-                            "dateReleased", this.dateReleased,
-                            "genre", this.genre,
-                            'producer', this.producer,
-                            'director', this.director,
-                            'movieBudget', this.movieBudget,
-                            'rating', this.rating
+                    return resolve(this.createOrUpdate("movies" + id));
+
+                }
+            );
+    }
+
+        /**
+         * @descrition This is a getter function which saves a new movie  or update a movie in the database.  
+         * @return {Promise}
+         */
+    createOrUpdate(id, options={}){
+        //return a promise which resolves after the object has been created or deleted
+        return new Promise(
+            // callback for the promise. Either reject or resolve
+            (resolve, reject) => {
+                //resolve after deleting the updated or newly created object
+                redisClient.hmset(id, ["name", options.name ? options.name: this.name,
+                            "dateReleased", options.dateReleased ? options.dateReleased : this.dateReleased,
+                            "genre", options.genre ? options.genre :this.genre,
+                            'producer', options.producer ? options.producer :this.producer,
+                            'director', options.director ? options.director :this.director,
+                            'movieBudget', options.movieBudget? options.movieBudget :this.movieBudget,
+                            'rating', options.rating ? options.rating :this.rating
                         ],
                         // callback for the hmset method which returns a reject if there is an error, or a resolve if there is a reply
                         (err, reply) => {
+                           
                             //reject if error
                             if (err) return reject(new MovieException('An unknown error occured while saving to redis'));
                             //resolve when no error. Statically call the find method of our Movie class, passing in the new id 
                             //as hmset doses not automatically return the new object by itself.
-                            return resolve(Movies.find("movies" + id));
+                            return resolve(Movies.find(id));
                         });
-
-                }
-            );
+            }
+        );
     }
 
     /**
@@ -101,33 +117,10 @@ class Movies {
      * update a Movie object based on the ID passed to the function.
      * @param {id} : String . The id of the movie to be returned
      * @param {options} : Object an object containing the name, release date, genre, producer, director, movie budget, and rating of a movie
-     * @return {Promise}
+     * @return {createOrUpdate} : a function that returns a promise
      */
     static update(id, options) {
-        //return a promise which resolves the found object or rejects with a `MovieException` Error
-        return new Promise(
-            // callback for the promise. Either reject or resolve
-            (resolve, reject) => {
-                //call the hmset method of our redis store. Passing in the id of the value we want to update and keys with thier value
-                redisClient.hmset(id, ["name", this.name,
-                    "dateReleased", options.dateReleased,
-                    "genre", options.genre,
-                    'producer', options.producer,
-                    'director', options.director,
-                    'movieBudget', options.movieBudget,
-                    'rating', options.rating
-                ],
-                 // callback for the hmset method which returns a reject if there is an error, or a resolve if there is a reply 
-                (err, reply) => {
-                    //reject if error
-                    if (err) return reject(new MovieException('An unknown error occured while saving to redis'));
-                    //resolve when no error. Statically call the find method of our Movie class, passing in the new id 
-                    //as hmset doses not automatically return the new object by itself.
-                    return resolve(Movies.find(id));
-                });
-            }
-        );
-
+        return new Movies().createOrUpdate(id, options);
     }
 
      /**
